@@ -55,6 +55,24 @@ def enum_visible_windows():
     return windows
 
 
+def collect_visible_window_titles():
+    """
+    Returns visible window titles (deduped, in first-seen order).
+    """
+    titles = []
+    seen = set()
+    for w in enum_visible_windows():
+        title = (w.get("title") or "").strip()
+        if not title:
+            continue
+        key = title.lower()
+        if key in seen:
+            continue
+        seen.add(key)
+        titles.append(title)
+    return titles
+
+
 def get_active_window_array():
     user32 = ctypes.windll.user32
     hwnd = user32.GetForegroundWindow()
@@ -294,12 +312,14 @@ def build_stdout_collector_payload():
     try:
         payload = {
             "activeWindow": get_active_window_title(),
+            "windows": collect_visible_window_titles(),
             "processes": collect_process_names(),
             "debug": {"source": "python-collector", "message": "ok"},
         }
     except Exception as exc:
         payload = {
             "activeWindow": "",
+            "windows": [],
             "processes": [],
             "debug": {
                 "source": "python-collector",
