@@ -1,0 +1,8 @@
+.env.local
+output/
+__pycache__/
+scripts/__pycache__/
+*.pyc
+processes.json
+process_titles.json
+clean_process_titles.json
